@@ -25,10 +25,12 @@ private suspend fun handleInit(
 ): List<Action> {
     val date = getDate(-29)
     val url: String =
-        "https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY&thumbs=true&start_date=" +
-                "${date.year}-${date.month.number}-${date.dayOfMonth}"
+        "https://api.nasa.gov/planetary/apod?" +
+                "api_key=l1Gq4scQZ6HjE17FT77oGIQWYNcOVZ99PmOQo5st" +
+                "&thumbs=true&" +
+                "start_date=${date.year}-${date.month.number}-${date.dayOfMonth}"
     val body: String = httpClient.get(url).body()
-    val list = Gson().fromJson(body, Array<ApodPreview>::class.java).toList()
+    val list = Gson().fromJson(body, Array<ApodModel>::class.java).toList()
     return listOf(
         HomeActions.DataRetrieved(list)
     )

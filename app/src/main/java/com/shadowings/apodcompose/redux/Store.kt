@@ -1,6 +1,8 @@
 package com.shadowings.apodcompose.redux
 
 import com.shadowings.apodcompose.deps.DepsState
+import com.shadowings.apodcompose.detail.detailReducer
+import com.shadowings.apodcompose.detail.detailTales
 import com.shadowings.apodcompose.home.homeReducer
 import com.shadowings.apodcompose.home.homeTales
 import kotlinx.coroutines.MainScope
@@ -19,7 +21,8 @@ internal val subscriptions = mutableListOf<Pair<String, ((action: Action) -> Uni
  */
 private fun reducer(state: AppState, action: Any) = AppState(
     deps = DepsState(),
-    home = homeReducer(state.home, action)
+    home = homeReducer(state.home, action),
+    detail = detailReducer(state.detail, action),
 )
 
 /**
@@ -27,7 +30,8 @@ private fun reducer(state: AppState, action: Any) = AppState(
  */
 private val tales: MutableList<suspend (action: Action, state: AppState) -> List<Action>> =
     mutableListOf(
-        ::homeTales
+        ::homeTales,
+        ::detailTales
     )
 
 /**

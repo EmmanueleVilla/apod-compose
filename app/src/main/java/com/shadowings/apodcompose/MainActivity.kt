@@ -1,46 +1,50 @@
 package com.shadowings.apodcompose
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.shadowings.apodcompose.home.HomeActions
-import com.shadowings.apodcompose.redux.store
-import com.shadowings.apodcompose.ui.theme.ApodComposeTheme
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import com.shadowings.apodcompose.redux.Action
+import com.shadowings.apodcompose.redux.AppState
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.subjects.BehaviorSubject
+import java.util.concurrent.TimeUnit
 
 class MainActivity : ComponentActivity() {
+    private val appStateSubject: BehaviorSubject<AppState> =
+        BehaviorSubject.createDefault(AppState())
+
+    private var appState: AppState by mutableStateOf(AppState())
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        store.dispatch(HomeActions.Init())
+
+        StoreInterface().sub("main_activity", ::handleAppState, ::handleAction)
+
         setContent {
-            ApodComposeTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    Greeting("Android")
-                }
-            }
+            ActivityComposable(appState)
         }
+
+        appStateSubject
+            .throttleLast(
+                250,
+                TimeUnit.MILLISECONDS,
+                AndroidSchedulers.mainThread()
+            )
+            .subscribe(
+                { this.runOnUiThread { appState = it } },
+                { Log.e("apod", it.toString()) }
+            )
     }
-}
 
-@Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
-}
+    private fun handleAppState(appState: AppState) {
+        appStateSubject.onNext(appState)
+    }
 
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    ApodComposeTheme {
-        Greeting("Android")
+    private fun handleAction(action: Action) {
+
     }
 }

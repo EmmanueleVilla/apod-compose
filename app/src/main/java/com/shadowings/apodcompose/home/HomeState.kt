@@ -2,9 +2,9 @@ package com.shadowings.apodcompose.home
 
 import com.google.gson.annotations.SerializedName
 
-data class HomeState(val apods: List<ApodPreview> = listOf())
+data class HomeState(val apods: List<ApodModel> = listOf())
 
-data class ApodPreview(
+data class ApodModel(
     @SerializedName("date")
     val date: String = "",
     @SerializedName("explanation")
@@ -14,7 +14,11 @@ data class ApodPreview(
     @SerializedName("title")
     val title: String = "",
     @SerializedName("url")
-    val url: String = "",
+    private val url: String = "",
+    @SerializedName("hdurl")
+    private val hdUrl: String = "",
     @SerializedName("thumbnail_url")
-    val thumbnailUrl: String = ""
-)
+    private val thumbnailUrl: String = ""
+) {
+    fun thumbnail() = if (mediaType == "image") url else thumbnailUrl
+}

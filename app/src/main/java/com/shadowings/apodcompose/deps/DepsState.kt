@@ -37,5 +37,9 @@ data class DepsState(
             it,
             DateTimeUnit.DAY
         )
+    },
+    val formattedToday: () -> String = {
+        val date = getDate(0)
+        "${date.year}-${date.month.number}-${date.dayOfMonth}"
     }
 )
