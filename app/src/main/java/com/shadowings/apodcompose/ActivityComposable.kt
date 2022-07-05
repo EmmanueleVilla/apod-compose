@@ -23,6 +23,7 @@ import com.shadowings.apodcompose.redux.store
 @Composable
 fun ActivityComposable(
     appState: AppState,
+    date: String = store.state.deps.formattedToday(),
     lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
 ) {
     val navController = rememberNavController()
@@ -31,10 +32,20 @@ fun ActivityComposable(
         modifier = Modifier.fillMaxSize(),
         color = Color.Black
     ) {
-        NavHost(navController = navController, startDestination = "home") {
+        NavHost(
+            navController = navController,
+            startDestination = if (date.isBlank()) "home" else "detail"
+        ) {
             composable(route = "home") {
                 HomeComposable(
                     navController = navController,
+                    appState = appState,
+                    lifecycleOwner = lifecycleOwner
+                )
+            }
+            composable(route = "detail") {
+                DetailComposable(
+                    date = date,
                     appState = appState,
                     lifecycleOwner = lifecycleOwner
                 )
@@ -44,7 +55,7 @@ fun ActivityComposable(
                 arguments = listOf(navArgument("date") { type = NavType.StringType })
             ) {
                 DetailComposable(
-                    date = it.arguments?.getString("date") ?: store.state.deps.formattedToday(),
+                    date = it.arguments?.getString("date") ?: date,
                     appState = appState,
                     lifecycleOwner = lifecycleOwner
                 )

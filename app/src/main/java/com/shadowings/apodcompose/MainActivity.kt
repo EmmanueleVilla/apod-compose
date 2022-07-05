@@ -27,8 +27,13 @@ class MainActivity : ComponentActivity() {
 
         StoreInterface().sub("main_activity", ::handleAppState, ::handleAction)
 
+        val appLinkIntent = intent
+        val appLinkData = appLinkIntent.data?.let {
+            return@let it.toString().split("/").last()
+        }
+
         setContent {
-            ActivityComposable(appState)
+            ActivityComposable(appState, appLinkData ?: "")
         }
 
         appStateSubject

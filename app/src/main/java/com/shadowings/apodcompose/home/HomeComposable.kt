@@ -77,7 +77,7 @@ fun ApodsGrid(apods: List<ApodModel>, navController: NavHostController) {
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
     LazyVerticalGrid(
-        columns = GridCells.Adaptive(screenWidth / 3),
+        columns = GridCells.Adaptive(screenWidth / 2),
         horizontalArrangement = Arrangement.Center,
         content = {
             items(apods.size) { index ->
@@ -85,8 +85,8 @@ fun ApodsGrid(apods: List<ApodModel>, navController: NavHostController) {
                 if (apod.toThumbnail().isBlank()) {
                     Box(
                         modifier = Modifier
-                            .width(screenWidth / 3)
-                            .height(screenWidth / 3)
+                            .width(screenWidth / 2)
+                            .height(screenWidth / 2)
                     ) {
                         Image(
                             modifier = Modifier
@@ -99,13 +99,13 @@ fun ApodsGrid(apods: List<ApodModel>, navController: NavHostController) {
                 } else {
                     Box(
                         modifier = Modifier
-                            .width(screenWidth / 3)
-                            .height(screenWidth / 3)
+                            .width(screenWidth / 2)
+                            .height(screenWidth / 2)
                     ) {
                         AsyncImage(
                             modifier = Modifier
-                                .width(screenWidth / 3)
-                                .height(screenWidth / 3)
+                                .width(screenWidth / 2)
+                                .height(screenWidth / 2)
                                 .align(Alignment.Center)
                                 .clickable {
                                     navController.navigate("detail/" + apod.date)
