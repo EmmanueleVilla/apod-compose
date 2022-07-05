@@ -1,9 +1,16 @@
 package com.shadowings.apodcompose.detail
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import android.Manifest
+import android.app.DownloadManager
+import android.content.Context
+import android.content.Context.DOWNLOAD_SERVICE
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Environment
+import android.webkit.WebView
+import android.webkit.WebViewClient
+import android.widget.Toast
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -17,16 +24,22 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.shadowings.apodcompose.MainActivity
 import com.shadowings.apodcompose.StoreInterface
 import com.shadowings.apodcompose.home.ApodModel
 import com.shadowings.apodcompose.redux.AppState
+import java.io.File
 
 @Preview
 @Composable
@@ -38,26 +51,32 @@ fun DetailComposableImagePreview() {
                 apod =
                 ApodModel(
                     date = "stub",
-                    explanation = "It is difficult to hide a galaxy behind a cluster of galaxies." +
-                            "  The closer cluster's gravity will act like a huge lens, pulling" +
-                            " images of the distant galaxy around the sides and greatly distorting" +
-                            " them.  This is just the case observed in the featured image recently" +
-                            " re-processed image from the Hubble Space Telescope." +
-                            "  The cluster GAL-CLUS-022058c is composed of many galaxies and is" +
-                            "  lensing the image of a yellow-red background galaxy into arcs seen" +
-                            " around the image center.  Dubbed a molten Einstein ring for its" +
-                            " unusual shape, four images of the same background galaxy have been" +
-                            " identified. Typically, a foreground galaxy cluster can only create" +
-                            " such smooth arcs if most of its mass is smoothly distributed -- and" +
-                            " therefore not concentrated in the cluster galaxies visible." +
-                            "  Analyzing the positions of these gravitational arcs gives" +
-                            " astronomers a method to estimate the dark matter distribution in" +
-                            " galaxy clusters, as well as infer when the stars in these early" +
-                            " galaxies began to form.   New APOD Social Mirrors in Arabic: " +
-                            "On Facebook, Instagram, and Twitter",
+                    explanation = LoremIpsum(100).values.joinToString(""),
                     hdUrl = "https://apod.nasa.gov/apod/image/2207/MoltenEinsteinRing_HubbleLodge_2972.jpg",
                     mediaType = "image",
-                    title = "A Molten Galaxy Einstein Ring",
+                    title = LoremIpsum(5).values.joinToString(""),
+                    url = "https://apod.nasa.gov/apod/image/2207/MoltenEinsteinRing_HubbleLodge_960.jpg"
+                )
+            )
+        ),
+        lifecycleOwner = LocalLifecycleOwner.current
+    )
+}
+
+@Preview
+@Composable
+fun DetailComposableVideoPreview() {
+    DetailComposable(
+        date = "stub",
+        appState = AppState(
+            detail = DetailState(
+                apod =
+                ApodModel(
+                    date = "stub",
+                    explanation = LoremIpsum(100).values.joinToString(""),
+                    hdUrl = "https://apod.nasa.gov/apod/image/2207/MoltenEinsteinRing_HubbleLodge_2972.jpg",
+                    mediaType = "video",
+                    title = LoremIpsum(5).values.joinToString(""),
                     url = "https://apod.nasa.gov/apod/image/2207/MoltenEinsteinRing_HubbleLodge_960.jpg"
                 )
             )
@@ -84,18 +103,13 @@ fun DetailComposable(date: String, appState: AppState, lifecycleOwner: Lifecycle
     Column(
         Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())) {
-        AsyncImage(
-            modifier = Modifier
-                .fillMaxWidth(),
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(apod.thumbnail())
-                .crossfade(true)
-                .crossfade(500)
-                .build(),
-            contentDescription = apod.date,
-            contentScale = ContentScale.FillWidth,
-        )
+            .verticalScroll(rememberScrollState())
+    ) {
+        if (apod.mediaType != "video") {
+            DetailImage(url = apod.thumbnail())
+        } else {
+            Webview(url = apod.url)
+        }
         Text(
             modifier = Modifier.padding(8.dp),
             text = apod.title,
@@ -108,13 +122,95 @@ fun DetailComposable(date: String, appState: AppState, lifecycleOwner: Lifecycle
             color = Color.White,
             fontSize = 18.sp
         )
-        Button(
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(24.dp),
-            onClick = { /*TODO*/ }
-        ) {
-            Text(text = "Download hi-res image")
+        val context = LocalContext.current
+        if (apod.title != "" && apod.hdUrl != "" && apod.mediaType != "video") {
+            Button(
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(24.dp),
+                onClick = {
+                    requestImageDownload(apod.date, apod.hdUrl, context)
+                }
+            ) {
+                Text(text = "Download hi-res image")
+            }
         }
     }
+}
+
+fun requestImageDownload(date: String, url: String, context: Context) {
+    if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        != PackageManager.PERMISSION_GRANTED
+    ) {
+        ActivityCompat.requestPermissions(
+            context as MainActivity,
+            arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+            123
+        )
+    } else {
+        executeDownload(date, url, context)
+    }
+}
+
+fun executeDownload(date: String, url: String, context: Context) {
+    val fileName = date
+    val dirName = "apods"
+
+    val direct = File(
+        Environment
+            .getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+            .absolutePath + "/" + dirName + "/"
+    )
+
+    if (!direct.exists()) {
+        direct.mkdir()
+    }
+    val request =
+        DownloadManager.Request(Uri.parse(url))
+            .setTitle("APOD $date")
+            .setDescription("Downloading")
+            .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+            .setDestinationInExternalPublicDir(
+                Environment.DIRECTORY_PICTURES,
+                File.separator + dirName + File.separator + fileName
+            )
+            .setAllowedOverMetered(true)
+            .setAllowedOverRoaming(true)
+
+    val downloadManager =
+        context.getSystemService(DOWNLOAD_SERVICE) as DownloadManager?
+    downloadManager!!.enqueue(request)
+    Toast.makeText(
+        context,
+        "Downloading.. Check the notifications",
+        Toast.LENGTH_LONG
+    ).show()
+}
+
+@Composable
+fun DetailImage(url: String) {
+    AsyncImage(
+        modifier = Modifier
+            .fillMaxWidth(),
+        model = ImageRequest.Builder(LocalContext.current)
+            .data(url)
+            .crossfade(true)
+            .crossfade(500)
+            .build(),
+        contentDescription = "apod detail image",
+        contentScale = ContentScale.FillWidth,
+    )
+}
+
+@Composable
+fun Webview(url: String) {
+    val context = LocalContext.current
+    AndroidView(modifier = Modifier
+        .fillMaxWidth()
+        .aspectRatio(16.0f / 9), factory = {
+        WebView(context).apply {
+            webViewClient = WebViewClient()
+            loadUrl(url)
+        }
+    })
 }

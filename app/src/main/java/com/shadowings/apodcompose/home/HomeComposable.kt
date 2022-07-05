@@ -5,10 +5,14 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -87,22 +91,40 @@ fun ApodsGrid(apods: List<ApodModel>, navController: NavHostController) {
                         )
                     }
                 } else {
-                    AsyncImage(
+                    Box(
                         modifier = Modifier
                             .width(screenWidth / 3)
                             .height(screenWidth / 3)
-                            .clickable {
-                                navController.navigate("detail/" + apod.date)
-                            },
-                        model = ImageRequest.Builder(LocalContext.current)
-                            .data(apod.thumbnail())
-                            .crossfade(true)
-                            .crossfade(500)
-                            .build(),
-                        contentDescription = apod.date,
-                        placeholder = painterResource(id = R.drawable.placeholder),
-                        contentScale = ContentScale.Crop,
-                    )
+                    ) {
+                        AsyncImage(
+                            modifier = Modifier
+                                .width(screenWidth / 3)
+                                .height(screenWidth / 3)
+                                .align(Alignment.Center)
+                                .clickable {
+                                    navController.navigate("detail/" + apod.date)
+                                },
+                            model = ImageRequest.Builder(LocalContext.current)
+                                .data(apod.thumbnail())
+                                .crossfade(true)
+                                .crossfade(500)
+                                .build(),
+                            contentDescription = apod.date,
+                            placeholder = painterResource(id = R.drawable.placeholder),
+                            contentScale = ContentScale.Crop,
+                        )
+                        if (apod.mediaType == "video") {
+                            Image(
+                                modifier = Modifier
+                                    .width(screenWidth / 10)
+                                    .height(screenWidth / 10)
+                                    .align(Alignment.BottomEnd),
+                                imageVector = Icons.Default.PlayArrow,
+                                colorFilter = ColorFilter.tint(Color.White),
+                                contentDescription = "Play"
+                            )
+                        }
+                    }
                 }
             }
         }

@@ -14,11 +14,11 @@ data class ApodModel(
     @SerializedName("title")
     val title: String = "",
     @SerializedName("url")
-    private val url: String = "",
+    val url: String = "",
     @SerializedName("hdurl")
-    private val hdUrl: String = "",
+    val hdUrl: String = "",
     @SerializedName("thumbnail_url")
-    private val thumbnailUrl: String = ""
+    val thumbnailUrl: String = ""
 ) {
     fun thumbnail() = if (mediaType == "image") url else thumbnailUrl
 }

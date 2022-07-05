@@ -5,6 +5,7 @@ import com.google.gson.Gson
 import com.shadowings.apodcompose.redux.store
 import io.ktor.client.*
 import io.ktor.client.plugins.*
+import io.ktor.client.plugins.cache.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.plugins.logging.*
 import io.ktor.client.request.*
@@ -20,6 +21,7 @@ data class DepsState(
         install(ContentNegotiation) {
             Gson()
         }
+        install(HttpCache)
         install(HttpTimeout) {
             requestTimeoutMillis = 30_000
         }
