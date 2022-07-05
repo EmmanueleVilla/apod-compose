@@ -98,3 +98,23 @@ dependencies {
     debugImplementation "androidx.compose.ui:ui-tooling:1.1.1"
     debugImplementation "androidx.compose.ui:ui-test-manifest:1.1.1"
 }
+
+detekt {
+    toolVersion = "1.18.1"
+
+    autoCorrect = true
+
+    source = files("src/main/java")
+
+    config = files("detekt.yml")
+
+    allRules = true
+
+    debug = true
+    reports {
+        html {
+            enabled = true
+            destination = file("build/reports/detekt/detekt.html")
+        }
+    }
+}

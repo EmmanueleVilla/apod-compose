@@ -11,7 +11,14 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.shadowings.apodcompose.MainActivity
 
+/**
+ * Image Downloader object
+ */
 class ImageDownloader {
+    /**
+     * Request to download an image.
+     * Opens the permission popups instead if the permission is not granted
+     */
     fun requestImageDownload(date: String, url: String, context: Context) {
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)
             != PackageManager.PERMISSION_GRANTED
@@ -40,8 +47,8 @@ class ImageDownloader {
                 .setAllowedOverRoaming(true)
 
         val downloadManager =
-            context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager?
-        downloadManager!!.enqueue(request)
+            context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+        downloadManager.enqueue(request)
         Toast.makeText(
             context,
             "Downloading.. Check the notifications",

@@ -29,6 +29,9 @@ import com.shadowings.apodcompose.StoreInterface
 import com.shadowings.apodcompose.home.ApodModel
 import com.shadowings.apodcompose.redux.AppState
 
+/**
+ * Composable of the whole Detail screen
+ */
 @Composable
 fun DetailComposable(date: String, appState: AppState, lifecycleOwner: LifecycleOwner) {
     DisposableEffect(lifecycleOwner)
@@ -49,8 +52,8 @@ fun DetailComposable(date: String, appState: AppState, lifecycleOwner: Lifecycle
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {
-        if (apod.mediaType != "video") {
-            DetailImage(url = apod.thumbnail())
+        if (!apod.isVideo()) {
+            DetailImage(url = apod.toThumbnail())
         } else {
             Webview(url = apod.url)
         }
@@ -67,7 +70,7 @@ fun DetailComposable(date: String, appState: AppState, lifecycleOwner: Lifecycle
             fontSize = 18.sp
         )
         val context = LocalContext.current
-        if (apod.title != "" && apod.hdUrl != "" && apod.mediaType != "video") {
+        if (apod.title != "" && apod.hdUrl != "" && !apod.isVideo()) {
             Button(
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
@@ -82,6 +85,9 @@ fun DetailComposable(date: String, appState: AppState, lifecycleOwner: Lifecycle
     }
 }
 
+/**
+ * Shows the image downloaded from the given url
+ */
 @Composable
 fun DetailImage(url: String) {
     AsyncImage(
@@ -97,6 +103,9 @@ fun DetailImage(url: String) {
     )
 }
 
+/**
+ * Shows a webview with the given url
+ */
 @Composable
 fun Webview(url: String) {
     val context = LocalContext.current
@@ -112,7 +121,7 @@ fun Webview(url: String) {
 
 @Preview
 @Composable
-fun DetailComposableImagePreview() {
+private fun DetailComposableImagePreview() {
     DetailComposable(
         date = "stub",
         appState = AppState(
@@ -134,7 +143,7 @@ fun DetailComposableImagePreview() {
 
 @Preview
 @Composable
-fun DetailComposableVideoPreview() {
+private fun DetailComposableVideoPreview() {
     DetailComposable(
         date = "stub",
         appState = AppState(

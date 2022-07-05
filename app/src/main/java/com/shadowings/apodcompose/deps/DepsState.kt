@@ -11,6 +11,15 @@ import io.ktor.client.plugins.logging.*
 import io.ktor.client.request.*
 import kotlinx.datetime.*
 
+const val TIMEOUT_MS = 30_000L
+
+/**
+ * Functions used by the tails
+ * @param log: logger method
+ * @param httpClient: http client for the requests
+ * @param getDate: returns the date with the given offset in days
+ * @param formattedToday: return today in the format yyyy-mm-dd
+ */
 data class DepsState(
     val log: (message: String) -> Unit = { Log.d("apod", it) },
     val httpClient: HttpClient = HttpClient {
@@ -23,7 +32,7 @@ data class DepsState(
         }
         install(HttpCache)
         install(HttpTimeout) {
-            requestTimeoutMillis = 30_000
+            requestTimeoutMillis = TIMEOUT_MS
         }
         install(Logging) {
             logger = object : Logger {

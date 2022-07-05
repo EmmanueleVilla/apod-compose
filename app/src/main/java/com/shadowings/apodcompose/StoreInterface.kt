@@ -6,6 +6,9 @@ import com.shadowings.apodcompose.redux.store
 import com.shadowings.apodcompose.redux.subscriptions
 import org.reduxkotlin.StoreSubscription
 
+/**
+ * Handles the subscriptions to the store
+ */
 class StoreInterface {
     private var subscription: StoreSubscription? = null
 

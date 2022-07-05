@@ -17,6 +17,9 @@ import com.shadowings.apodcompose.home.HomeComposable
 import com.shadowings.apodcompose.redux.AppState
 import com.shadowings.apodcompose.redux.store
 
+/**
+ * Composable of the whole activity
+ */
 @Composable
 fun ActivityComposable(
     appState: AppState,

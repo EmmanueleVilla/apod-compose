@@ -2,8 +2,14 @@ package com.shadowings.apodcompose.home
 
 import com.google.gson.annotations.SerializedName
 
+/**
+ * Contains the list of apods of the homepage
+ */
 data class HomeState(val apods: List<ApodModel> = listOf())
 
+/**
+ * APOD model data class
+ */
 data class ApodModel(
     @SerializedName("date")
     val date: String = "",
@@ -20,5 +26,13 @@ data class ApodModel(
     @SerializedName("thumbnail_url")
     val thumbnailUrl: String = ""
 ) {
-    fun thumbnail() = if (mediaType == "image") url else thumbnailUrl
+    /**
+     * Returns [url] if the apod is an image, [thumbnailUrl] is it's a video
+     */
+    fun toThumbnail() = if (mediaType == "image") url else thumbnailUrl
+
+    /**
+     * Returns true if the apod is a video
+     */
+    fun isVideo() = mediaType == "video"
 }

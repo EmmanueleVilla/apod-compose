@@ -13,6 +13,9 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import java.util.concurrent.TimeUnit
 
+/**
+ * Main activity that shows the [ActivityComposable]
+ */
 class MainActivity : ComponentActivity() {
     private val appStateSubject: BehaviorSubject<AppState> =
         BehaviorSubject.createDefault(AppState())
@@ -45,6 +48,6 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun handleAction(action: Action) {
-
+        // nothing to do here
     }
 }

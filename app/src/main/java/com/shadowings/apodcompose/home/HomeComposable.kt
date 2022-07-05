@@ -33,13 +33,16 @@ import com.shadowings.apodcompose.redux.AppState
 
 @Preview
 @Composable
-fun HomeComposablePreview() {
+private fun HomeComposablePreview() {
     HomeComposable(
         appState = AppState(),
         lifecycleOwner = LocalLifecycleOwner.current
     )
 }
 
+/**
+ * Composable of the home page
+ */
 @Composable
 fun HomeComposable(
     appState: AppState,
@@ -66,6 +69,9 @@ fun HomeComposable(
     }
 }
 
+/**
+ * Composable that shows a grid of the given apods
+ */
 @Composable
 fun ApodsGrid(apods: List<ApodModel>, navController: NavHostController) {
     val configuration = LocalConfiguration.current
@@ -76,7 +82,7 @@ fun ApodsGrid(apods: List<ApodModel>, navController: NavHostController) {
         content = {
             items(apods.size) { index ->
                 val apod = apods[index]
-                if (apod.thumbnail().isBlank()) {
+                if (apod.toThumbnail().isBlank()) {
                     Box(
                         modifier = Modifier
                             .width(screenWidth / 3)
@@ -105,7 +111,7 @@ fun ApodsGrid(apods: List<ApodModel>, navController: NavHostController) {
                                     navController.navigate("detail/" + apod.date)
                                 },
                             model = ImageRequest.Builder(LocalContext.current)
-                                .data(apod.thumbnail())
+                                .data(apod.toThumbnail())
                                 .crossfade(true)
                                 .crossfade(500)
                                 .build(),
