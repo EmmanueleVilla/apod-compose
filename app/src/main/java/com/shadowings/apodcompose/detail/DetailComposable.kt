@@ -26,6 +26,7 @@ import androidx.lifecycle.LifecycleOwner
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.shadowings.apodcompose.StoreInterface
+import com.shadowings.apodcompose.deps.ImageDownloader
 import com.shadowings.apodcompose.home.ApodModel
 import com.shadowings.apodcompose.redux.AppState
 

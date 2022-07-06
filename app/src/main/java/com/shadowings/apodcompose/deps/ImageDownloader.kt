@@ -1,4 +1,4 @@
-package com.shadowings.apodcompose.detail
+package com.shadowings.apodcompose.deps
 
 import android.Manifest
 import android.app.DownloadManager

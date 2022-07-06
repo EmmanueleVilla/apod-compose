@@ -1,6 +1,6 @@
 package com.shadowings.apodcompose.redux
 
-import com.shadowings.apodcompose.deps.DepsState
+import com.shadowings.apodcompose.deps.depsReducer
 import com.shadowings.apodcompose.detail.detailReducer
 import com.shadowings.apodcompose.detail.detailTales
 import com.shadowings.apodcompose.home.homeReducer
@@ -20,7 +20,7 @@ internal val subscriptions = mutableListOf<Pair<String, ((action: Action) -> Uni
  * Root reducer
  */
 private fun reducer(state: AppState, action: Any) = AppState(
-    deps = DepsState(),
+    deps = depsReducer(state.deps, action),
     home = homeReducer(state.home, action),
     detail = detailReducer(state.detail, action),
 )

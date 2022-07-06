@@ -7,11 +7,14 @@ import androidx.activity.compose.setContent
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import com.shadowings.apodcompose.deps.CacheManager
+import com.shadowings.apodcompose.deps.DepsActions
 import com.shadowings.apodcompose.redux.Action
 import com.shadowings.apodcompose.redux.AppState
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import java.util.concurrent.TimeUnit
+
 
 /**
  * Main activity that shows the [ActivityComposable]
@@ -25,12 +28,22 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        StoreInterface().sub("main_activity", ::handleAppState, ::handleAction)
+        with(StoreInterface()) {
+            dispatchAction(
+                DepsActions.Init({
+                    CacheManager().readFromCache(cacheDir, it)
+                }, { key, content ->
+                    CacheManager().writeToCache(cacheDir, key, content)
+                })
+            )
+            sub("main_activity", ::handleAppState, ::handleAction)
+        }
 
         val appLinkIntent = intent
         val appLinkData = appLinkIntent.data?.let {
             return@let it.toString().split("/").last()
         }
+
 
         setContent {
             ActivityComposable(appState, appLinkData ?: "")
