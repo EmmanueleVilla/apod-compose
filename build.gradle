@@ -1,6 +1,6 @@
 buildscript {
     repositories {
-        maven { url "https://kotlin.bintray.com/kotlinx" }
+        mavenCentral()
     }
     dependencies {
         classpath "io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.18.1"
