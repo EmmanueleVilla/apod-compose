@@ -249,3 +249,9 @@ appStateSubject
         { Log.e("apod", it.toString()) }
     )
 ```
+After that, it's just a matter of passing the state to the composable and then to the child:
+```kotlin
+setContent {
+            ActivityComposable(appState)
+        }
+```
