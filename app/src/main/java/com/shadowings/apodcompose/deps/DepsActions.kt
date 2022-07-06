@@ -1,6 +1,5 @@
 package com.shadowings.apodcompose.deps
 
-import com.shadowings.apodcompose.detail.DetailActions
 import com.shadowings.apodcompose.redux.Action
 
 /**

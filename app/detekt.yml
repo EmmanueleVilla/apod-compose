@@ -365,6 +365,8 @@ potential-bugs:
 
 style:
   active: true
+  DestructuringDeclarationWithTooManyEntries:
+    active: false
   CollapsibleIfStatements:
     active: true
   DataClassContainsFunctions:

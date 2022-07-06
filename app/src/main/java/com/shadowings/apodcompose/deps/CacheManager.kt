@@ -1,19 +1,31 @@
 package com.shadowings.apodcompose.deps
 
+import android.util.Log
 import java.io.*
 
+/**
+ * Handles read and write from the cache
+ */
 class CacheManager {
 
+    /**
+     * Returns the content of the file named [key] in the given [cacheDir]
+     * Returns null if the file doesn't exists
+     */
     fun readFromCache(cacheDir: File, key: String): String? {
         return try {
             val file = File(cacheDir, key)
             val fileInputStream = FileInputStream(file)
             getFileContent(fileInputStream)
         } catch (e: FileNotFoundException) {
+            Log.d("apod", e.toString())
             null
         }
     }
 
+    /**
+     * Writes the [content] to the [key] file in che [cacheDir] directory
+     */
     fun writeToCache(cacheDir: File, key: String, content: String) {
         val file = File(cacheDir, key)
         file.createNewFile()

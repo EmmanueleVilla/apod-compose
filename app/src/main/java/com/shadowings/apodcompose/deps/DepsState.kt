@@ -53,6 +53,8 @@ data class DepsState(
         val date = getDate(0)
         "${date.year}-${date.month.number}-${date.dayOfMonth}"
     },
-    val fromCache: (key: String) -> String? = { throw Error("Deps not initialized") },
-    val toCache: (key: String, content: String) -> Unit = { _, _ -> throw Error("Deps not initialized") }
+    val fromCache: (key: String) -> String? = { throw IllegalStateException("Deps not initialized") },
+    val toCache: (key: String, content: String) -> Unit = { _, _ ->
+        throw IllegalStateException("Deps not initialized")
+    }
 )
