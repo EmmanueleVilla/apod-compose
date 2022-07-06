@@ -58,15 +58,15 @@ fun homeReducer(state: HomeState, action: Any): HomeState {
 ### The tales
 A tale is a suspend method that takes an action and the state as an input, and returns a list of actions to be dispatched after its execution.
 
-For instance, the homeTales, when it intercepts the HomeActions.Init action:
-> * Takes the needed dependencies from the DepsState
-> * Execute the http request using the ktor library
-> * Returns a new action with the request response as the payload
+For instance, this is the homeTales method
 ```kotlin
 internal suspend fun homeTales(action: Action, state: AppState): List<Action> {
     return when (action) {
+        // when the action is the home initialization
         is HomeActions.Init -> {
+            // take the needed deps
             val (_, httpClient, getDate) = state.deps
+            // pass them to the handle method
             handleInit(httpClient, getDate)
         }
         else -> listOf()
@@ -77,15 +77,20 @@ private suspend fun handleInit(
     httpClient: HttpClient,
     getDate: (deltaDays: Int) -> LocalDate
 ): List<Action> {
+    // retrieve the startData
     val date = getDate(-9)
+    //generate the url
     val url: String =
         "https://api.nasa.gov/planetary/apod?" +
                 "api_key=MY_API_KEY" +
                 "&thumbs=true&" +
                 "start_date=${date.year}-${date.month.number}-${date.dayOfMonth}"
+    // read the response body
     val body: String = httpClient.get(url).body()
+    // deserialize the response
     val list =
         Gson().fromJson(body, Array<ApodModel>::class.java).toList().sortedByDescending { it.date }
+    // return a DataRetrieved action to be dispatched
     return listOf(
         HomeActions.DataRetrieved(list)
     )
