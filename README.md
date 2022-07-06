@@ -258,3 +258,32 @@ setContent {
             ActivityComposable(appState)
         }
 ```
+### Launching actions
+To launch an action when a composable is displayed, we can rely on the LifecycleOwner callbacks.
+
+For example, to initialize the homepage we can do so in the HomeComposable:
+```kotlin
+@Composable
+fun HomeComposable(
+    appState: AppState,
+    lifecycleOwner: LifecycleOwner,
+    navController: NavHostController = rememberNavController()
+) {
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_START) {
+                StoreInterface().dispatchAction(HomeActions.Init())
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
+    ...
+}
+```
+Now we're all set! The activity will pass the starting AppState to the HomeComposable, that will launch the initialization action and receive the new state after the flow completes.
+
+## Contribution
+If you wanna contribute to the architecture and readability of this project, feel free to open pull requests and open issues ;)
