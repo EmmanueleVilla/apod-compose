@@ -95,26 +95,24 @@ private suspend fun handleInit(
 We are now ready to initialize the store with a custom middleware. A middleware is a function that takes the store, the action and a "next" method to be called to dispatch the action to the reducer.
 
 We handle it this way:
-> * print the action for debug purpose
-> * call the "next" function so that the action is handled by the reducers and the state is updated
-> * notify the subscribers that the action has been handled by the reducer
-> * foreach tale, launch it as coroutine and dispatch the actions in the result
 
 ```kotlin
 private fun buildMiddleware() = middleware<AppState> { store, next, action ->
-    if (action is Action) {
-        store.state.deps.log(action.toString())
-    }
-
+    // pass the action to the reducers
     next(action)
+    
+    // notify the subscriber that the action has been handled by the reducer
     subscriptions.forEach {
         MainScope().launch {
             it.second(action as Action)
         }
     }
+    
+    // foreach tale
     tales.forEach {
         MainScope().launch {
             try {
+                // launch the coroutine and dispatch the actions in the returned list
                 it(action as Action, store.state).forEach { store.dispatch(it) }
             } catch (e: Exception) {
                 store.state.deps.log(e.toString())
