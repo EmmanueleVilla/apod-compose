@@ -34,14 +34,15 @@ class ImageDownloader {
     }
 
     private fun executeDownload(date: String, url: String, context: Context) {
+        val filename = date + "." + url.split(".").last()
         val request =
             DownloadManager.Request(Uri.parse(url))
-                .setTitle("APOD $date")
+                .setTitle(filename)
                 .setDescription("Downloading")
                 .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
                 .setDestinationInExternalPublicDir(
                     Environment.DIRECTORY_DOWNLOADS,
-                    date
+                    filename
                 )
                 .setAllowedOverMetered(true)
                 .setAllowedOverRoaming(true)
